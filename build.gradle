@@ -29,7 +29,7 @@ ext {
     platform = System.getProperty("platform") ?: os
     architecture = System.getProperty("host") ?: System.getProperty("os.arch")
     targetLibraryPath = "${project.buildDir}/libs/${platform}/${architecture}"
-    nativeHeadersPath = "${project.rootDir}/${System.properties["rocJniLibraryName"]}/src/main/public"
+    nativeHeadersPath = project(":roc_jni").projectDir.getAbsolutePath() + "/src/main/public"
 }
 
 task generateHeaders(dependsOn: 'classes') {
@@ -51,9 +51,9 @@ task generateHeaders(dependsOn: 'classes') {
 }
 
 task copyNativeDeps(type: Copy) {
-    from("${project.rootDir}/${System.properties["rocJniLibraryName"]}/build/lib/main/debug")
+    from(project(":roc_jni").buildDir.getAbsolutePath() + "/lib/main/debug")
     into targetLibraryPath
-    dependsOn ":${System.properties["rocJniLibraryName"]}:build"
+    dependsOn ":roc_jni:build"
 }
 
 jar.dependsOn copyNativeDeps
@@ -75,7 +75,8 @@ testlogger {
 }
 
 javadoc {
-    options.overview = "docs/javadoc/overview.html"
+    options.overview = "${project.rootDir}/docs/javadoc/overview.html"
+    options.memberLevel = System.getProperty("visibility") == "private" ? JavadocMemberLevel.PRIVATE : JavadocMemberLevel.PUBLIC
 }
 
 static def getOsName() {

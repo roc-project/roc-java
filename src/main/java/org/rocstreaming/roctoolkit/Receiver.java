@@ -125,7 +125,22 @@ import java.io.IOException;
  * @see ReceiverConfig
  * @see java.lang.AutoCloseable
  */
-public class Receiver extends NativeObject implements AutoCloseable {
+public class Receiver extends NativeObject {
+
+    /**
+     * Validate receiver constructor parameters and open a new receiver if validation is successful.
+     *
+     * @param context                       should point to an opened context.
+     * @param config                        should point to an initialized config.
+     *
+     * @return                              the native roc receiver pointer.
+     * @throws IllegalArgumentException     if the arguments are invalid.
+     * @throws Exception                    if an error occured when creating the receiver.
+     */
+    private static long validate(Context context, ReceiverConfig config) throws IllegalArgumentException, Exception {
+        if (context == null || config == null) throw new IllegalArgumentException();
+        return open(context.getPtr(), config);
+    }
 
     /**
      * Open a new receiver.
@@ -136,12 +151,10 @@ public class Receiver extends NativeObject implements AutoCloseable {
      * @param config        should point to an initialized config.
      *
      * @throws IllegalArgumentException if the arguments are invalid.
-     * @throws IOException              if an error occured when creating the receiver.
+     * @throws Exception                if an error occured when creating the receiver.
      */
-    public Receiver(Context context, ReceiverConfig config) throws IllegalArgumentException, IOException {
-        super();
-        if (context == null || config == null) throw new IllegalArgumentException();
-        open(context.getPtr(), config);
+    public Receiver(Context context, ReceiverConfig config) throws IllegalArgumentException, Exception {
+        super(validate(context, config), context, Receiver::close);
     }
 
     /**
@@ -185,22 +198,8 @@ public class Receiver extends NativeObject implements AutoCloseable {
         readFloats(getPtr(), samples);
     }
 
-    /**
-     * Close the receiver.
-     *
-     * Deinitializes and deallocates the receiver, and detaches it from the context. The user
-     * should ensure that nobody uses the receiver during and after this call. If this
-     * function fails, the receiver is kept opened and attached to the context.
-     *
-     * @throws IOException if there was an error closing the receiver.
-     */
-    @Override
-    public void close() throws IOException {
-        close(getPtr());
-    }
-
-    private native void open(long contextPtr, ReceiverConfig config) throws IllegalArgumentException, IOException;
+    private static native long open(long contextPtr, ReceiverConfig config) throws IllegalArgumentException, Exception;
     private native void bind(long receiverPtr, int type, int protocol, Address address) throws IllegalArgumentException, IOException;
     private native void readFloats(long receiverPtr, float[] samples) throws IOException;
-    private native void close(long receiverPtr) throws IOException;
+    private static native void close(long receiverPtr) throws IOException;
 }

@@ -64,6 +64,7 @@ public class SenderTest {
     }
 
     @Test
+    @SuppressWarnings("resource")
     public void TestInvalidSenderCreation() {
         assertThrows(IllegalArgumentException.class, () -> new Sender(null, config));
         assertThrows(IllegalArgumentException.class, () -> new Sender(context, null));

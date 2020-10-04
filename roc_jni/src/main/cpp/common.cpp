@@ -60,9 +60,3 @@ jobject get_object_field(JNIEnv *env, jclass clazz, jobject obj, const char* att
     assert(attrId != NULL);
     return env->GetObjectField(obj, attrId);
 }
-
-void set_native_pointer(JNIEnv *env, jclass clazz, jobject native_obj, void* ptr) {
-    jfieldID attrId = env->GetFieldID(clazz, "ptr", "J");
-    assert(attrId != NULL);
-    env->SetLongField(native_obj, attrId, (jlong) ptr);
-}

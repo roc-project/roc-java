@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_rocstreaming_roctoolkit_Sender
  * Method:    open
- * Signature: (JLorg/rocstreaming/roctoolkit/SenderConfig;)V
+ * Signature: (JLorg/rocstreaming/roctoolkit/SenderConfig;)J
  */
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Sender_open
-  (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL Java_org_rocstreaming_roctoolkit_Sender_open
+  (JNIEnv *, jclass, jlong, jobject);
 
 /*
  * Class:     org_rocstreaming_roctoolkit_Sender
@@ -45,7 +45,7 @@ JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Sender_writeFloats
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Sender_close
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

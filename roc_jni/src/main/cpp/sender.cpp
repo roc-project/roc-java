@@ -60,39 +60,29 @@ char sender_config_unmarshall(JNIEnv *env, roc_sender_config* config, jobject jc
     return err;
 }
 
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Sender_open(JNIEnv *env, jobject thisObj, jlong contextPtr, jobject jconfig) {
+JNIEXPORT jlong JNICALL Java_org_rocstreaming_roctoolkit_Sender_open(JNIEnv *env, jclass senderClass, jlong contextPtr, jobject jconfig) {
     roc_context*            context;
     roc_sender_config       config;
     roc_sender*             sender;
-    jclass                  senderClass;
-
-    if (jconfig == NULL) {
-        jclass exceptionClass = env->FindClass(ILLEGAL_ARGUMENTS_EXCEPTION);
-        env->ThrowNew(exceptionClass, "Bad arguments");
-        return;
-    }
-
-    senderClass = env->FindClass(SENDER_CLASS);
-    assert(senderClass != NULL);
 
     context = (roc_context*) contextPtr;
 
     if (sender_config_unmarshall(env, &config, jconfig) != 0) {
         jclass exceptionClass = env->FindClass(ILLEGAL_ARGUMENTS_EXCEPTION);
         env->ThrowNew(exceptionClass, "Bad arguments");
-        return;
+        return (jlong) NULL;
     }
 
     if ((sender = roc_sender_open(context, &config)) == NULL) {
         jclass exceptionClass = env->FindClass(EXCEPTION);
         env->ThrowNew(exceptionClass, "Error opening sender");
-        return;
+        return (jlong) NULL;
     }
 
-    set_native_pointer(env, senderClass, thisObj, sender);
+    return (jlong) sender;
 }
 
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Sender_close(JNIEnv *env, jobject thisObj, jlong senderPtr) {
+JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Sender_close(JNIEnv *env, jclass senderClass, jlong senderPtr) {
 
     roc_sender* sender = (roc_sender*) senderPtr;
 

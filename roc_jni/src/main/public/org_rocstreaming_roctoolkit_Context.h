@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_rocstreaming_roctoolkit_Context
  * Method:    open
- * Signature: (Lorg/rocstreaming/roctoolkit/ContextConfig;)V
+ * Signature: (Lorg/rocstreaming/roctoolkit/ContextConfig;)J
  */
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Context_open
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT jlong JNICALL Java_org_rocstreaming_roctoolkit_Context_open
+  (JNIEnv *, jclass, jobject);
 
 /*
  * Class:     org_rocstreaming_roctoolkit_Context
@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Context_open
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Context_close
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

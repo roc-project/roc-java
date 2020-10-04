@@ -3,24 +3,39 @@ package org.rocstreaming.roctoolkit;
 /**
  * Roc context.
  *
- * Context contains memory pools and network worker thread(s). Other objects that work
- * with memory and network should be attached to a context. It is allowed both to create
- * a separate context for every object, or to create a single context shared between
- * multiple objects.
+ * Context contains memory pools and network worker thread(s). Other objects
+ * that work with memory and network should be attached to a context. It is
+ * allowed both to create a separate context for every object, or to create a
+ * single context shared between multiple objects.
  *
  * A context is created using {@link #Context() Context()} or
  * {@link #Context(ContextConfig) Context(ContextConfig)} and destroyed using
- * {@link #close() close}.
- * <code>Receiver</code> class implements {@link AutoCloseable AutoCloseable} so if it is used in a
- * try-with-resources statement the object is closed automatically at the end of the statement.
- * Objects can be attached and detached to an opened context at any moment from any
- * thread. However, the user should ensure that the context is not closed until there
- * are no objects attached to the context.
+ * {@link #close() close()}. <code>Receiver</code> class implements
+ * {@link AutoCloseable AutoCloseable} so if it is used in a try-with-resources
+ * statement the object is closed automatically at the end of the statement.
+ * Objects can be attached and detached to an opened context at any moment from
+ * any thread. However, the user should ensure that the context is not closed
+ * until there are no objects attached to the context.
  *
  * @see Sender
  * @see Receiver
  */
-public class Context extends NativeObject implements AutoCloseable {
+public class Context extends NativeObject {
+
+    /**
+     * Validate context constructor parameters and open a new context if validation is successful.
+     *
+     * @param config                        should point to an initialized config.
+     *
+     * @return                              the native roc context pointer.
+     *
+     * @throws IllegalArgumentException     if the arguments are invalid.
+     * @throws Exception                    if there are not enough resources.
+     */
+    private static long validate(ContextConfig config) throws IllegalArgumentException, Exception {
+        if (config == null) throw new IllegalArgumentException();
+        return open(config);
+    }
 
     /**
      * Open a new context.
@@ -44,27 +59,10 @@ public class Context extends NativeObject implements AutoCloseable {
      * @throws IllegalArgumentException if the arguments are invalid.
      * @throws Exception if there are not enough resources.
      */
-    public Context(ContextConfig config) throws Exception {
-        super();
-        open(config);
+    public Context(ContextConfig config) throws IllegalArgumentException, Exception {
+        super(validate(config), Context::close);
     }
 
-    /**
-     * Close the context.
-     *
-     * Stops any started background threads, deinitializes and deallocates the context.
-     * The user should ensure that nobody uses the context during and after this call.
-     *
-     * If this function fails, the context is kept opened.
-     *
-     * @throws Exception if there are objects attached to the context.
-     */
-    @Override
-    public void close() throws Exception {
-        close(getPtr());
-    }
-
-    private native void open(ContextConfig config) throws Exception;
-    private native void close(long nativePtr) throws Exception;
+    private static native long open(ContextConfig config) throws IllegalArgumentException, Exception;
+    private static native void close(long nativePtr) throws Exception;
 }
-

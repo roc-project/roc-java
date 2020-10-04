@@ -7,7 +7,7 @@ package org.rocstreaming.roctoolkit;
  *
  * @see Family
  */
-public class Address extends NativeObject {
+public class Address  {
 
     private Family family;
     private String ip;
@@ -37,7 +37,6 @@ public class Address extends NativeObject {
      *
      */
     public Address(Family family, String ip, int port) {
-        super();
         if (family == null || ip == null) throw new IllegalArgumentException();
         this.family = family;
         this.ip = ip;

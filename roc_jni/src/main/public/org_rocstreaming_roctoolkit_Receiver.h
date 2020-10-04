@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_rocstreaming_roctoolkit_Receiver
  * Method:    open
- * Signature: (JLorg/rocstreaming/roctoolkit/ReceiverConfig;)V
+ * Signature: (JLorg/rocstreaming/roctoolkit/ReceiverConfig;)J
  */
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Receiver_open
-  (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL Java_org_rocstreaming_roctoolkit_Receiver_open
+  (JNIEnv *, jclass, jlong, jobject);
 
 /*
  * Class:     org_rocstreaming_roctoolkit_Receiver
@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Receiver_readFloats
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Receiver_close
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

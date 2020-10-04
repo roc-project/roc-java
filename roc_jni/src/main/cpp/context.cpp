@@ -21,36 +21,26 @@ char context_config_unmarshall(JNIEnv *env, roc_context_config* conf, jobject jc
     return err;
 }
 
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Context_open(JNIEnv *env, jobject thisObj, jobject config) {
+JNIEXPORT jlong JNICALL Java_org_rocstreaming_roctoolkit_Context_open(JNIEnv *env, jclass contextClass, jobject config) {
     roc_context*        context;
     roc_context_config  context_config;
-    jclass              contextClass;
-
-    if (config == NULL) {
-        jclass exceptionClass = env->FindClass(ILLEGAL_ARGUMENTS_EXCEPTION);
-        env->ThrowNew(exceptionClass, "Wrong context configuration values");
-        return;
-    }
-
-    contextClass = env->FindClass(CONTEXT_CLASS);
-    assert(contextClass != NULL);
 
     if (context_config_unmarshall(env, &context_config, config) != 0) {
         jclass exceptionClass = env->FindClass(ILLEGAL_ARGUMENTS_EXCEPTION);
         env->ThrowNew(exceptionClass, "Wrong context configuration values");
-        return;
+        return (jlong) NULL;
     }
 
     if ((context = roc_context_open(&context_config)) == NULL) {
         jclass exceptionClass = env->FindClass(EXCEPTION);
         env->ThrowNew(exceptionClass, "Error opening context");
-        return;
+        return (jlong) NULL;
     }
 
-    set_native_pointer(env, contextClass, thisObj, context);
+    return (jlong) context;
 }
 
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Context_close(JNIEnv *env, jobject thisObj, jlong nativePtr) {
+JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Context_close(JNIEnv *env, jclass contextClass, jlong nativePtr) {
 
     roc_context* context = (roc_context*) nativePtr;
 

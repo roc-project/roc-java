@@ -24,7 +24,6 @@ unsigned int get_uint_field_value(JNIEnv *env, jclass clazz, jobject obj, const 
 long long get_llong_field_value(JNIEnv *env, jclass clazz, jobject obj, const char* attr_name, char* error);
 unsigned long long get_ullong_field_value(JNIEnv *env, jclass clazz, jobject obj, const char* attr_name, char* error);
 
-void set_native_pointer(JNIEnv *env, jclass clazz, jobject native_obj, void* ptr);
 void set_int_field_value(JNIEnv *env, jclass clazz, jobject obj, const char* attr_name, int value);
 
 int get_enum_value(JNIEnv *env, jclass clazz, jobject enumObj);

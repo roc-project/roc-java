@@ -50,37 +50,27 @@ char receiver_config_unmarshall(JNIEnv *env, roc_receiver_config* config, jobjec
     return err;
 }
 
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Receiver_open(JNIEnv * env, jobject thisObj,
+JNIEXPORT jlong JNICALL Java_org_rocstreaming_roctoolkit_Receiver_open(JNIEnv * env, jclass receiverClass,
                     jlong contextPtr, jobject jconfig) {
     roc_context*            context;
     roc_receiver_config     receiverConfig;
     roc_receiver*           receiver;
-    jclass                  receiverClass;
-
-    if (jconfig == NULL) {
-        jclass exceptionClass = env->FindClass(ILLEGAL_ARGUMENTS_EXCEPTION);
-        env->ThrowNew(exceptionClass, "Bad arguments");
-        return;
-    }
-
-    receiverClass = env->FindClass(RECEIVER_CLASS);
-    assert(receiverClass != NULL);
 
     context = (roc_context*) contextPtr;
 
     if (receiver_config_unmarshall(env, &receiverConfig, jconfig) != 0) {
         jclass exceptionClass = env->FindClass(ILLEGAL_ARGUMENTS_EXCEPTION);
         env->ThrowNew(exceptionClass, "Bad arguments");
-        return;
+        return (jlong) NULL;
     }
 
     if ((receiver = roc_receiver_open(context, &receiverConfig)) == NULL) {
         jclass exceptionClass = env->FindClass(EXCEPTION);
         env->ThrowNew(exceptionClass, "Error opening receiver");
-        return;
+        return (jlong) NULL;
     }
 
-    set_native_pointer(env, receiverClass, thisObj, receiver);
+    return (jlong) receiver;
 }
 
 JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Receiver_bind(JNIEnv * env, jobject thisObj, jlong receiverPtr,
@@ -146,7 +136,7 @@ JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Receiver_readFloats(JNIE
     env->ReleaseFloatArrayElements(jsamples, samples, 0);
 }
 
-JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Receiver_close(JNIEnv *env, jobject thisObj, jlong receiverPtr) {
+JNIEXPORT void JNICALL Java_org_rocstreaming_roctoolkit_Receiver_close(JNIEnv *env, jclass receiverClass, jlong receiverPtr) {
 
     roc_receiver* receiver = (roc_receiver*) receiverPtr;
 

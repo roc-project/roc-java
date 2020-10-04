@@ -112,7 +112,23 @@ import java.io.IOException;
  * @see SenderConfig
  * @see java.lang.AutoCloseable
  */
-public class Sender extends NativeObject implements AutoCloseable {
+public class Sender extends NativeObject {
+
+    /**
+     * Validate sender constructor parameters and open a new sender if validation is successful.
+     *
+     * @param context                       should point to an opened context.
+     * @param config                        should point to an initialized config.
+     *
+     * @return                              the native roc sender pointer.
+     *
+     * @throws IllegalArgumentException     if the arguments are invalid.
+     * @throws Exception                    if an error occured when creating the sender.
+     */
+    private static long validate(Context context, SenderConfig config) throws IllegalArgumentException, Exception {
+        if (context == null || config == null) throw new IllegalArgumentException();
+        return open(context.getPtr(), config);
+    }
 
     /**
      * Open a new sender.
@@ -122,12 +138,10 @@ public class Sender extends NativeObject implements AutoCloseable {
      * @param config    should point to an initialized config.
      *
      * @throws IllegalArgumentException if the arguments are invalid.
-     * @throws IOException              if an error occured when creating the sender.
+     * @throws Exception                if an error occured when creating the sender.
      */
-    public Sender(Context context, SenderConfig config) throws IllegalArgumentException, IOException {
-        super();
-        if (context == null || config == null) throw new IllegalArgumentException();
-        open(context.getPtr(), config);
+    public Sender(Context context, SenderConfig config) throws IllegalArgumentException, Exception {
+        super(validate(context, config), context, Sender::close);
     }
 
     /**
@@ -190,23 +204,9 @@ public class Sender extends NativeObject implements AutoCloseable {
         writeFloats(getPtr(), samples);
     }
 
-    /**
-     * Close the sender.
-     *
-     * Deinitializes and deallocates the sender, and detaches it from the context. The user
-     * should ensure that nobody uses the sender during and after this call. If this
-     * function fails, the sender is kept opened and attached to the context.
-     *
-     * @throws IOException if there was an error closing the sender.
-     */
-    @Override
-    public void close() throws IOException {
-        close(getPtr());
-    }
-
-    private native void open(long contextPtr, SenderConfig config) throws IOException;
+    private static native long open(long contextPtr, SenderConfig config) throws IllegalArgumentException, Exception;
     private native void bind(long senderPtr, Address address) throws IllegalArgumentException, IOException;
     private native void connect(long senderPtr, int portType, int protocol, Address address) throws IOException;
     private native void writeFloats(long senderPtr, float[] samples) throws IOException;
-    private native void close(long senderPtr) throws IOException;
+    private static native void close(long senderPtr) throws IOException;
 }

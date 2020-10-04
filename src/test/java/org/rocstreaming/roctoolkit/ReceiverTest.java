@@ -46,6 +46,7 @@ public class ReceiverTest {
     }
 
     @Test
+    @SuppressWarnings("resource")
     public void TestInvalidReceiverCreation() {
         assertThrows(IllegalArgumentException.class, () -> new Receiver(null, config));
         assertThrows(IllegalArgumentException.class, () -> new Receiver(context, null));
